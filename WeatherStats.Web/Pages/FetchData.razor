@@ -1,0 +1,47 @@
+﻿@page "/fetchdata"
+
+@using WeatherStats.Shared.Data
+@using System.Collections.Generic;
+@inject IWeatherService WeatherService
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (weatherData == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temperature</th>
+                <th>Wind Speed</th>
+                <th>Precipitaion</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var weather in weatherData)
+            {
+                <tr>
+                    <td>@weather.Date.ToShortDateString()</td>
+                    <td>@weather.AvgTemperature</td>
+                    <td>@weather.AvgWindSpeed</td>
+                    <td>@weather.Precipitaion</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<WeatherData> weatherData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        weatherData = await WeatherService.Get();
+    }
+}

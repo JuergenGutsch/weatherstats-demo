@@ -1,0 +1,28 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+
+option csharp_namespace = "WeatherStats.Kent";
+
+package Weather;
+
+// The weather service definition.
+service Weather {
+  // Sends a greeting
+  rpc GetWeather (WeatherRequest) returns (WeatherReply);
+}
+
+// The request message containing the date.
+message WeatherRequest {
+  google.protobuf.Timestamp date = 1;
+}
+
+// The response message containing the weather.
+message WeatherReply {
+  google.protobuf.Timestamp date = 1;
+  float avgTemperature = 2;
+  float minTemperature = 3;
+  float maxTemperature = 4;
+  float avgWindSpeed = 5;
+  float precipitaion = 6;
+}
