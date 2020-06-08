@@ -6,6 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using WeatherStats.Shared.Data;
 using WeatherStats.Web.Data;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace WeatherStats.Web
 {
@@ -24,6 +27,13 @@ namespace WeatherStats.Web
         {
             services.Configure<WeatherDatabaseSettings>(
                 Configuration.GetSection(nameof(WeatherDatabaseSettings)));
+
+            services.AddBlazorise(options =>
+            {
+                options.ChangeTextOnKeyPress = true;
+            })
+            .AddBootstrapProviders()
+            .AddFontAwesomeIcons();
 
             services.AddSingleton<IWeatherDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<WeatherDatabaseSettings>>().Value);
@@ -53,6 +63,10 @@ namespace WeatherStats.Web
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.ApplicationServices
+                .UseBootstrapProviders()
+                .UseFontAwesomeIcons();
 
             app.UseEndpoints(endpoints =>
             {

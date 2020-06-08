@@ -1,12 +1,23 @@
 ﻿@page "/fetchdata"
 
 @using WeatherStats.Shared.Data
-@using System.Collections.Generic;
+@using Blazorise
+@using Blazorise.Charts
+@using System.Collections.Generic
+@using System.Linq
+
 @inject IWeatherService WeatherService
+
+@code
+{
+    LineChart<double> lineChart; 
+}
 
 <h1>Weather forecast</h1>
 
 <p>This component demonstrates fetching data from a service.</p>
+
+<LineChart @ref="lineChart" TItem="double" />
 
 @if (weatherData == null)
 {
@@ -37,11 +48,66 @@ else
     </table>
 }
 
-@code {
-    List<WeatherData> weatherData;
-
-    protected override async Task OnInitializedAsync()
+@code
+{
+    public static List<WeatherData> weatherData;
+    public static string errMessage;
+  
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        weatherData = await WeatherService.Get();
+        if (firstRender)
+        {
+            await ReloadData();
+            //await HandleRedraw();  
+        }
     }
+
+    private async Task ReloadData()
+    {
+        var i = 0;
+        while(true)
+        {
+            try
+            {
+                var data = await WeatherService.Get();
+                weatherData = data.Take(i++).ToList();        
+                
+                this.StateHasChanged();            
+                await Task.Delay(1000);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                break;
+            }  
+        }
+    }
+
+    async Task HandleRedraw()
+    {
+        lineChart.Clear();
+
+        lineChart.AddLabel(weatherData.Select(x => x.Date.ToShortDateString()).ToArray());
+
+        lineChart.AddDataSet(GetLineChartDataset());
+
+        await lineChart.Update();
+    }
+
+    List<string> backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+    List<string> borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+    LineChartDataset<double> GetLineChartDataset()
+    {
+        return new LineChartDataset<double>
+        {
+            Label = "Weather Data",
+            Data = weatherData.Select(x => (double)(x.AvgTemperature ?? 0)).ToList(),
+            BackgroundColor = backgroundColors,
+            BorderColor = borderColors,
+            Fill = true,
+            PointRadius = 2,
+            BorderDash = new List<int> { }
+        };
+    } 
 }

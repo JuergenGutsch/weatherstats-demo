@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UserSecretsId>dotnet-WeatherStats.Worker-22E95B76-7FD1-48F8-A37B-AD9C0BD90B26</UserSecretsId>
+    <CodeAnalysisRuleSet>..\editorconfig.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +19,7 @@
     <PackageReference Include="Grpc.Tools" Version="2.24.0" PrivateAssets="All" />
     <PackageReference Include="MongoDB.Driver" Version="2.9.3" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\WeatherStats.Shared\WeatherStats.Shared.csproj" />
   </ItemGroup>
